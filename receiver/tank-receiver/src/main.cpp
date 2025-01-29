@@ -57,6 +57,31 @@ void setup()
    Serial.println("Receiver is ready.");
 }
 
+// Extract the motor speeds from the received data
+int motorSpeeds[2] = {0, 0};
+
+void setMotorSpeeds(char data[])
+{
+   int newMotorSpeeds[2] = {0, 0};
+
+   // data = "100,200"
+   char *token = strtok(data, ",");
+   if (token == NULL)
+      return;
+
+   newMotorSpeeds[0] = atoi(token);
+   
+   token = strtok(NULL, ",");
+   if (token == NULL)
+      return;
+
+   newMotorSpeeds[1] = atoi(token);
+
+   // Update the motor speeds
+   motorSpeeds[0] = newMotorSpeeds[0];
+   motorSpeeds[1] = newMotorSpeeds[1];
+}
+
 void loop()
 {
    // forward(motor1, motor2, 100);
@@ -70,8 +95,17 @@ void loop()
    {
       // Read the incoming data
       radio.read(&receivedData, sizeof(receivedData));
-      Serial.print("Received: ");
-      Serial.println(receivedData);
+      setMotorSpeeds(receivedData);
+
+      // Print the received data
+      Serial.print("Motor speeds: ");
+      Serial.print(motorSpeeds[0]);
+      Serial.print(", ");
+      Serial.println(motorSpeeds[1]);
+
+      // Set the motor speeds
+      motor1.drive(motorSpeeds[0]);
+      motor2.drive(motorSpeeds[1]);      
    }
 
    delay(100);

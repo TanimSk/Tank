@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <WebSocketsServer.h>
-#include <ESP8266WebServer.h>
 #include <RF24.h>
 
 // Wi-Fi credentials
@@ -10,7 +9,7 @@ const char *password = "12345678";
 
 // WebSocket server on port 81
 WebSocketsServer webSocket = WebSocketsServer(81);
-ESP8266WebServer server(80);
+// ESP8266WebServer server(80);
 
 // NRF24L01 pins and configuration
 #define CE_PIN D4
@@ -42,12 +41,10 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t *payload, size_t length)
     if (success)
     {
       Serial.println("Message sent to nRF24L01 successfully.");
-      webSocket.sendTXT(num, "Message delivered to nRF24L01.");
     }
     else
     {
       Serial.println("Failed to send message to nRF24L01.");
-      webSocket.sendTXT(num, "Failed to deliver message to nRF24L01.");
     }
     break;
   }
@@ -65,7 +62,7 @@ void setup()
       ; // Stop execution
   }
   radio.openWritingPipe(address);
-  radio.setPALevel(RF24_PA_LOW);
+  radio.setPALevel(RF24_PA_HIGH);
   radio.stopListening();
 
   // Start Wi-Fi in AP mode
@@ -76,18 +73,12 @@ void setup()
 
   // Start WebSocket server
   webSocket.begin();
-  webSocket.onEvent(webSocketEvent);
-
-  // Start HTTP server
-  server.on("/", []()
-            { server.send(200, "text/plain", "WebSocket server is running!"); });
-  server.begin();
+  webSocket.onEvent(webSocketEvent);  
 
   Serial.println("WebSocket and HTTP servers are running.");
 }
 
 void loop()
 {
-  webSocket.loop();      // Handle WebSocket communication
-  server.handleClient(); // Handle HTTP server requests
+  webSocket.loop();
 }

@@ -3,12 +3,12 @@ import websockets
 import keyboard
 import time  # For tracking debounce time
 
-DEBOUNCE_INTERVAL = 0.2  # Set debounce time in seconds (200 ms)
+DEBOUNCE_INTERVAL = 0.8  # Set debounce time in seconds (200 ms)
 MAX_SPEED = 255  # Set the maximum speed of the motors
 
 
 async def communicate():
-    uri = "ws://192.168.4.1/ws"  # Replace with the ESP32's IP
+    uri = "ws://192.168.4.1:81"  # Replace with the ESP32's IP
     last_sent_time = 0
     last_combination = ""
 
