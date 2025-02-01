@@ -3,8 +3,8 @@ import websockets
 import keyboard
 import time  # For tracking debounce time
 
-DEBOUNCE_INTERVAL = 0.8  # Set debounce time in seconds (200 ms)
-MAX_SPEED = 255  # Set the maximum speed of the motors
+DEBOUNCE_INTERVAL = 1.2  # Set debounce time in seconds (200 ms)
+MAX_SPEED = 1  # Set the maximum speed of the motors
 
 
 async def communicate():

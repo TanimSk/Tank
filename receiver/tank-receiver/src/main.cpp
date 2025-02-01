@@ -6,6 +6,9 @@
 #include <nRF24L01.h>
 #include <RF24.h>
 
+// LED
+#define BULITIN_LED 2
+
 // For the motor driver
 #define PWMA 13
 #define AIN2 14
@@ -51,10 +54,11 @@ void setup()
 
    // Set the communication pipe and enable listening mode
    radio.openReadingPipe(0, address);
-   radio.setPALevel(RF24_PA_LOW); // Power level
+   radio.setPALevel(RF24_PA_HIGH); // Power level
    radio.startListening();        // Start receiving data
 
    Serial.println("Receiver is ready.");
+   brake(motor1, motor2);
 }
 
 // Extract the motor speeds from the received data
@@ -70,7 +74,7 @@ void setMotorSpeeds(char data[])
       return;
 
    newMotorSpeeds[0] = atoi(token);
-   
+
    token = strtok(NULL, ",");
    if (token == NULL)
       return;
@@ -87,7 +91,6 @@ void loop()
    // forward(motor1, motor2, 100);
    // delay(2000);
    // // Use of brake again.
-   // brake(motor1, motor2);
    // delay(2000);
 
    // Check if data is available
@@ -104,8 +107,19 @@ void loop()
       Serial.println(motorSpeeds[1]);
 
       // Set the motor speeds
-      motor1.drive(motorSpeeds[0]);
-      motor2.drive(motorSpeeds[1]);      
+      if (motorSpeeds[0] != 0 && motorSpeeds[1] != 0)
+      {
+         motor1.drive(motorSpeeds[0]);
+         motor2.drive(motorSpeeds[1]);
+      }
+      if (motorSpeeds[0] == 0)
+      {
+         motor1.brake();
+      }
+      if (motorSpeeds[1] == 0)
+      {
+         motor2.brake();
+      }
    }
 
    delay(100);
