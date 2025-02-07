@@ -44,6 +44,7 @@ char receivedData[32] = "";
 void setup()
 {
    Serial.begin(115200);
+   pinMode(BULITIN_LED, OUTPUT);
 
    // Initialize the nRF24L01 module
    while (!radio.begin())
@@ -55,7 +56,7 @@ void setup()
    // Set the communication pipe and enable listening mode
    radio.openReadingPipe(0, address);
    radio.setPALevel(RF24_PA_HIGH); // Power level
-   radio.startListening();        // Start receiving data
+   radio.startListening();         // Start receiving data
 
    Serial.println("Receiver is ready.");
    brake(motor1, motor2);
@@ -96,6 +97,7 @@ void loop()
    // Check if data is available
    if (radio.available())
    {
+      digitalWrite(BULITIN_LED, HIGH);
       // Read the incoming data
       radio.read(&receivedData, sizeof(receivedData));
       setMotorSpeeds(receivedData);
@@ -120,7 +122,11 @@ void loop()
       {
          motor2.brake();
       }
+
+      delay(100);
+      return;
    }
 
+   digitalWrite(BULITIN_LED, LOW);
    delay(100);
 }
